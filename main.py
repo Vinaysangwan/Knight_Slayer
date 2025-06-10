@@ -1,8 +1,9 @@
 import pygame
 import sys
 
-from scripts.utils import load_image
+from scripts.utils import load_image, load_rect_image
 from scripts.entities import PhysicalEntity
+from scripts.tilemap import Tilemap
 
 
 class Game:
@@ -16,9 +17,18 @@ class Game:
 
         # Assets
         self.assets = {
+            "grass": load_rect_image("world_tileset.png", top_left_pos=[0, 0], size=[64, 64]),
+            "desert": load_rect_image("world_tileset.png", top_left_pos=[64, 0], size=[64, 64]),
+            "field": load_rect_image("world_tileset.png", top_left_pos=[128, 0], size=[64, 64]),
+            "snow": load_rect_image("world_tileset.png", top_left_pos=[192, 0], size=[64, 64]),
+            "ice": load_rect_image("world_tileset.png", top_left_pos=[256, 0], size=[64, 64]),
             "player": load_image("knight.png"),
         }
 
+        # Tilemap
+        self.tilemap = Tilemap(self)
+
+        # Player
         self.player = PhysicalEntity(self, "player", (50, 50), (32, 32))
         self.movement = [False, False]
 
@@ -37,6 +47,7 @@ class Game:
         self.player.update(movement=(self.movement[1] - self.movement[0], 0) * 5)
 
     def render(self):
+        self.tilemap.render(self.screen)
         self.player.render(self.screen)
 
     def poll_Event(self):
