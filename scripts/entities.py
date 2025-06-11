@@ -2,12 +2,12 @@ import pygame
 
 
 class PhysicalEntity:
-    def __init__(self, game, e_type: str, pos: list, size=[32, 32], offset=[0, 0]):
+    def __init__(self, game, e_type: str, pos: list, size=[32, 32], sprite_offset=[0, 0]):
         self.game = game
         self.type = e_type
         self.pos = list(pos)
         self.size = size
-        self.offset = offset
+        self.sprite_offset = sprite_offset
 
         self.frame = 0
         self.velocity = [0, 0]
@@ -15,7 +15,9 @@ class PhysicalEntity:
 
     def get_Entity_Rect(self):
         self.collision = {"up": False, "down": False, "left": False, "right": False}
-        return pygame.Rect(self.pos[0] + self.offset[0], self.pos[1] + self.offset[1], self.size[0], self.size[1])
+        return pygame.Rect(
+            self.pos[0] + self.sprite_offset[0], self.pos[1] + self.sprite_offset[1], self.size[0], self.size[1]
+        )
 
     def update(self, tilemap, movement=[0, 0]):
         frame_movement = (movement[0] + self.velocity[0], movement[1] + self.velocity[1])
@@ -31,7 +33,7 @@ class PhysicalEntity:
                 elif frame_movement[0] > 0:
                     entity_rect.right = rect.left
                     self.collision["right"] = True
-                self.pos[0] = entity_rect.x - self.offset[0]
+                self.pos[0] = entity_rect.x - self.sprite_offset[0]
 
         # Collison in Y-axis
         self.pos[1] += frame_movement[1]
@@ -44,7 +46,7 @@ class PhysicalEntity:
                 elif frame_movement[1] > 0:
                     entity_rect.bottom = rect.top
                     self.collision["down"] = True
-                self.pos[1] = entity_rect.y - self.offset[1]
+                self.pos[1] = entity_rect.y - self.sprite_offset[1]
 
         # Gravity
         if self.collision["down"] or self.collision["up"]:
@@ -52,5 +54,5 @@ class PhysicalEntity:
         else:
             self.velocity[1] = min(self.velocity[1] + 0.1, 5)
 
-    def render(self, surf):
-        surf.blit(self.game.assets[self.type][self.frame], self.pos)
+    def render(self, surf, offset=[0, 0]):
+        surf.blit(self.game.assets[self.type][self.frame], (self.pos[0] - offset[0], self.pos[1] - offset[1]))

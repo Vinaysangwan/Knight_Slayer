@@ -20,6 +20,9 @@ class Game:
         # Game Clock
         self.game_clock = pygame.time.Clock()
 
+        # Camera Scroll
+        self.scroll = [0, 0]
+
         # Game Assets
         self.assets = {
             "grass": load_surfaces("world_tileset.png", frame_pos=(0, 0), count=(2, 2)),
@@ -34,7 +37,7 @@ class Game:
         self.tilemap = Tilemap(self, tile_size=32)
 
         # Player
-        self.player = PhysicalEntity(self, "player", (100, 100), (13, 19), (9, 9))
+        self.player = PhysicalEntity(self, "player", [100, 100], [13, 19], [9, 9])
         self.movement = [False, False]
 
     def run(self):
@@ -49,11 +52,15 @@ class Game:
             self.game_clock.tick(60)
 
     def update(self):
-        self.player.update(self.tilemap, (self.movement[1] - self.movement[0], 0))
+        self.scroll[0] += (self.player.pos[0] - self.screen_size[0] / 2 - self.scroll[0]) / 30
+        self.scroll[1] += (self.player.pos[1] - self.screen_size[1] / 2 - self.scroll[1]) / 30
+        self.render_scroll = [int(self.scroll[0]), int(self.scroll[1])]
+
+        self.player.update(self.tilemap, [self.movement[1] - self.movement[0], 0])
 
     def render(self):
-        self.tilemap.render(self.screen)
-        self.player.render(self.screen)
+        self.tilemap.render(self.screen, self.render_scroll)
+        self.player.render(self.screen, self.render_scroll)
 
     def poll_Event(self):
         for event in pygame.event.get():
