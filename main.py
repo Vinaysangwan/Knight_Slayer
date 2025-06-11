@@ -32,15 +32,17 @@ class Game:
             "farming": load_surfaces("world_tileset.png", frame_pos=(4, 0), count=(2, 2)),
             "snow": load_surfaces("world_tileset.png", frame_pos=(6, 0), count=(2, 2)),
             "ice": load_surfaces("world_tileset.png", frame_pos=(8, 0), count=(2, 2)),
-            "player": load_surfaces("small-knight.png", frame_pos=(0, 0), count=(4, 1), size=(14, 19)),
             "player/Idle": Animation(
-                load_surfaces("small-knight.png", frame_pos=(0, 0), count=(4, 1), size=(14, 19)), duration=6
+                load_surfaces("knight.png", frame_pos=(0, 0), count=(4, 1), size=(14, 19)), duration=6
             ),
             "player/Run": Animation(
-                load_surfaces("small-knight.png", frame_pos=(0, 2), count=(8, 2), size=(14, 19)), duration=3
+                load_surfaces("knight.png", frame_pos=(0, 2), count=(8, 2), size=(14, 19)), duration=3
             ),
             "player/Jump": Animation(
-                load_surfaces("small-knight.png", frame_pos=(0, 5), count=(1, 1), size=(14, 19)), duration=2
+                load_surfaces("knight.png", frame_pos=(0, 5), count=(1, 1), size=(14, 19)), duration=1
+            ),
+            "player/Sit": Animation(
+                load_surfaces("knight.png", frame_pos=(0, 7), count=(1, 1), size=(14, 19)), duration=1
             ),
         }
 

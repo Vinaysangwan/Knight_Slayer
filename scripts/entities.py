@@ -7,12 +7,11 @@ class PhysicalEntity:
         self.type = e_type
         self.pos = list(pos)
         self.sprite_offset = sprite_offset
-        self.size = [size[0], size[1]]
+        self.size = size
 
         self.velocity = [0, 0]
         self.collision = {"up": False, "down": False, "left": False, "right": False}
 
-        self.frame = 0
         self.flip = False
         self.current_action = ""
         self.set_Action("Idle")

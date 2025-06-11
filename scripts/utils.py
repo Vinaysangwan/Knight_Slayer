@@ -25,7 +25,7 @@ def load_surfaces(path: str, frame_pos: list, count: list, size=[16, 16]):
 
 
 class Animation:
-    def __init__(self, sprites: list, duration, loop=True):
+    def __init__(self, sprites: list, duration: int, loop=True):
         self.sprites = sprites
         self.duration = duration
         self.loop = loop
@@ -37,8 +37,12 @@ class Animation:
         return self
 
     def get_Anim_Image(self):
-        return self.sprites[int(self.frame_dur // self.duration)].copy()
+        return self.sprites[int(self.frame_dur // self.duration)]
 
     def update(self):
         if self.loop:
             self.frame_dur = (self.frame_dur + 1) % (self.duration * len(self.sprites))
+        else:
+            self.frame_dur = min(self.frame_dur + 1, self.duration * len(self.sprites) - 1)
+            if self.frame_dur >= self.duration * len(self.sprites):
+                self.done = True
