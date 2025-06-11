@@ -1,15 +1,24 @@
 import pygame
 
-BASE_SPRITES_PATH = "assets/sprites/"
+BASE_SPRITE_PATH = "assets/sprites/"
 
 
-def load_image(path):
-    img = pygame.image.load(BASE_SPRITES_PATH + path).convert_alpha()
+def load_image(path: str) -> pygame.image:
+    img = pygame.image.load(BASE_SPRITE_PATH + path).convert_alpha()
     return img
 
 
-def load_rect_image(path, top_left_pos=[0, 0], size=[32, 32]):
-    img = pygame.image.load(BASE_SPRITES_PATH + path).convert_alpha()
-    rect = pygame.Rect(*top_left_pos, *size)
-    img.subsurface(rect)
+def load_surface_frame(path, frame: list, size: list) -> pygame.Surface:
+    img = pygame.Surface((size[0], size[1])).convert_alpha()
+    img.blit(load_image(path), (0, 0), (frame[0] * size[0], frame[1] * size[1], size[0], size[1]))
+    img.set_colorkey((0, 0, 0))
     return img
+
+
+def load_surfaces(path: str, frame_pos: list, count: list, size=[32, 32]):
+    sprites_list = []
+    for i in range(count[0]):
+        for j in range(count[1]):
+            sprites_list.append(load_surface_frame(path, frame=(frame_pos[0] + i, frame_pos[1] + j), size=size))
+
+    return sprites_list

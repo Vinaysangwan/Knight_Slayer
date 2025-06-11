@@ -1,7 +1,9 @@
 import pygame
 import sys
 
-from scripts.utils import load_image, load_rect_image
+import pygame.display
+
+from scripts.utils import load_surfaces
 from scripts.entities import PhysicalEntity
 from scripts.tilemap import Tilemap
 
@@ -10,31 +12,34 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.screen = pygame.display.set_mode((640, 480))
+        # Game Screen
+        self.screen_size = [640, 480]
+        self.screen = pygame.display.set_mode(self.screen_size)
         pygame.display.set_caption("Knight Slayer")
 
+        # Game Clock
         self.game_clock = pygame.time.Clock()
 
-        # Assets
+        # Game Assets
         self.assets = {
-            "grass": load_rect_image("world_tileset.png", top_left_pos=[0, 0], size=[64, 64]),
-            "desert": load_rect_image("world_tileset.png", top_left_pos=[64, 0], size=[64, 64]),
-            "field": load_rect_image("world_tileset.png", top_left_pos=[128, 0], size=[64, 64]),
-            "snow": load_rect_image("world_tileset.png", top_left_pos=[192, 0], size=[64, 64]),
-            "ice": load_rect_image("world_tileset.png", top_left_pos=[256, 0], size=[64, 64]),
-            "player": load_image("knight.png"),
+            "grass": load_surfaces("world_tileset.png", frame_pos=(0, 0), count=(2, 2)),
+            "desert": load_surfaces("world_tileset.png", frame_pos=(2, 0), count=(2, 2)),
+            "farming": load_surfaces("world_tileset.png", frame_pos=(4, 0), count=(2, 2)),
+            "snow": load_surfaces("world_tileset.png", frame_pos=(6, 0), count=(2, 2)),
+            "ice": load_surfaces("world_tileset.png", frame_pos=(8, 0), count=(2, 2)),
+            "player": load_surfaces("knight.png", frame_pos=(0, 0), count=(4, 1), size=(32, 32)),
         }
 
         # Tilemap
-        self.tilemap = Tilemap(self)
+        self.tilemap = Tilemap(self, tile_size=32)
 
         # Player
-        self.player = PhysicalEntity(self, "player", (50, 50), (32, 32))
+        self.player = PhysicalEntity(self, "player", (100, 100), (13, 19), (9, 9))
         self.movement = [False, False]
 
     def run(self):
         while True:
-            self.screen.fill((0, 20, 100))
+            self.screen.fill((20, 152, 220))
 
             self.poll_Event()
             self.update()
@@ -44,7 +49,7 @@ class Game:
             self.game_clock.tick(60)
 
     def update(self):
-        self.player.update(movement=(self.movement[1] - self.movement[0], 0) * 5)
+        self.player.update(self.tilemap, (self.movement[1] - self.movement[0], 0))
 
     def render(self):
         self.tilemap.render(self.screen)
@@ -53,7 +58,7 @@ class Game:
     def poll_Event(self):
         for event in pygame.event.get():
 
-            # Quit Event
+            # Close Event
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -63,19 +68,20 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-
-                elif event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT:
                     self.movement[0] = True
-                elif event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT:
                     self.movement[1] = True
+                if event.key == pygame.K_UP:
+                    self.player.velocity[1] = -3
 
             # Key Up Event
             if event.type == pygame.KEYUP:
+
                 if event.key == pygame.K_LEFT:
                     self.movement[0] = False
-                elif event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT:
                     self.movement[1] = False
 
 
-# Calling the Run Function of the Game Class
 Game().run()
