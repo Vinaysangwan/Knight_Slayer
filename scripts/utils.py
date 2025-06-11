@@ -15,10 +15,30 @@ def load_surface_frame(path, frame: list, size: list) -> pygame.Surface:
     return img
 
 
-def load_surfaces(path: str, frame_pos: list, count: list, size=[32, 32]):
+def load_surfaces(path: str, frame_pos: list, count: list, size=[16, 16]):
     sprites_list = []
     for i in range(count[0]):
         for j in range(count[1]):
             sprites_list.append(load_surface_frame(path, frame=(frame_pos[0] + i, frame_pos[1] + j), size=size))
 
     return sprites_list
+
+
+class Animation:
+    def __init__(self, sprites: list, duration, loop=True):
+        self.sprites = sprites
+        self.duration = duration
+        self.loop = loop
+
+        self.frame_dur = 0
+        self.done = False
+
+    def get_Animation(self):
+        return self
+
+    def get_Anim_Image(self):
+        return self.sprites[int(self.frame_dur // self.duration)].copy()
+
+    def update(self):
+        if self.loop:
+            self.frame_dur = (self.frame_dur + 1) % (self.duration * len(self.sprites))

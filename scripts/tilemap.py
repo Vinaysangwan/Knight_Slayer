@@ -4,7 +4,7 @@ PHYSICAL_TILES = {"grass", "desert", "farming", "snow", "ice"}
 
 
 class Tilemap:
-    def __init__(self, game, tile_size=32):
+    def __init__(self, game, tile_size=16):
         self.game = game
         self.tile_size = tile_size
 
