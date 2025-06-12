@@ -32,6 +32,9 @@ class Game:
             "farming": load_surfaces("world_tileset.png", frame_pos=(4, 0), count=(2, 2)),
             "snow": load_surfaces("world_tileset.png", frame_pos=(6, 0), count=(2, 2)),
             "ice": load_surfaces("world_tileset.png", frame_pos=(8, 0), count=(2, 2)),
+            "green_tree": load_surfaces("world_tileset.png", frame_pos=(0, 3), count=(1, 3)),
+            "yellow_tree": load_surfaces("world_tileset.png", frame_pos=(1, 3), count=(1, 3)),
+            "light_green_tree": load_surfaces("world_tileset.png", frame_pos=(2, 3), count=(1, 3)),
             "player/Idle": Animation(
                 load_surfaces("knight.png", frame_pos=(0, 0), count=(4, 1), size=(14, 19)), duration=6
             ),
@@ -48,6 +51,11 @@ class Game:
 
         # Tilemap
         self.tilemap = Tilemap(self)
+
+        try:
+            self.tilemap.load("map.json")
+        except FileNotFoundError:
+            pass
 
         # Player
         self.player = Player(self, [100, 100])
@@ -67,8 +75,8 @@ class Game:
             self.game_clock.tick(60)
 
     def update(self):
-        self.scroll[0] += (self.player.pos[0] - self.display_size[0] / 2 - self.scroll[0]) / 30
-        self.scroll[1] += (self.player.pos[1] - self.display_size[1] / 2 - self.scroll[1]) / 30
+        self.scroll[0] += (self.player.get_Entity_Rect().centerx - self.display_size[0] / 2 - self.scroll[0]) / 30
+        self.scroll[1] += (self.player.get_Entity_Rect().centery - self.display_size[1] / 2 - self.scroll[1]) / 30
         self.render_scroll = [int(self.scroll[0]), int(self.scroll[1])]
 
         self.player.update(self.tilemap, [self.movement[1] - self.movement[0], 0])

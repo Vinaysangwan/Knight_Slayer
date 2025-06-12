@@ -1,6 +1,22 @@
 import pygame
+import json
 
 PHYSICAL_TILES = {"grass", "desert", "farming", "snow", "ice"}
+AUTOTILE_TILES = {"grass", "desert", "farming", "snow", "ice"}
+AUTOTILE_TREES = {"green_tree", "yellow_tree", "light_green_tree"}
+
+rules_autotile_tiles = {
+    tuple(sorted([(0, 1)])): 0,
+    tuple(sorted([(0, -1)])): 1,
+    tuple(sorted([(0, -1), (0, 1)])): 1,
+    tuple(sorted([])): 0,
+}
+
+rules_autotile_trees = {
+    tuple(sorted([(0, 1)])): 0,
+    tuple(sorted([(0, 1), (0, -1)])): 1,
+    tuple(sorted([(0, -1)])): 2,
+}
 
 
 class Tilemap:
@@ -9,10 +25,6 @@ class Tilemap:
         self.tile_size = tile_size
 
         self.tilemap = {}
-
-        for i in range(10):
-            self.tilemap[str(i + 3) + ";10"] = {"type": "grass", "variant": 0, "pos": [i + 3, 10]}
-            self.tilemap["10;" + str(i + 5)] = {"type": "desert", "variant": 0, "pos": [10, i + 5]}
 
     def get_Neighbor_tiles(self, pos: list):
         neighbor_tiles = []
@@ -40,6 +52,29 @@ class Tilemap:
 
         return rects
 
+    def auto_Tile(self):
+        for loc in self.tilemap:
+            tile = self.tilemap[loc]
+
+            neighbor_tiles = set()
+            neighbor_trees = set()
+            for shift in [(0, -1), (0, 1)]:
+                check_loc = str(tile["pos"][0] + shift[0]) + ";" + str(tile["pos"][1] + shift[1])
+                if check_loc in self.tilemap:
+                    if self.tilemap[check_loc]["type"] in AUTOTILE_TILES:
+                        neighbor_tiles.add(shift)
+                    elif self.tilemap[check_loc]["type"] in AUTOTILE_TREES:
+                        neighbor_trees.add(shift)
+
+            neighbor_tiles = tuple(sorted(neighbor_tiles))
+            neighbor_trees = tuple(sorted(neighbor_trees))
+
+            if neighbor_tiles in rules_autotile_tiles:
+                tile["variant"] = rules_autotile_tiles[neighbor_tiles]
+
+            if neighbor_trees in rules_autotile_trees:
+                tile["variant"] = rules_autotile_trees[neighbor_trees]
+
     def render(self, surf, offset=[0, 0]):
         for loc in self.tilemap:
             tile = self.tilemap[loc]
@@ -47,3 +82,16 @@ class Tilemap:
                 self.game.assets[tile["type"]][tile["variant"]],
                 (tile["pos"][0] * self.tile_size - offset[0], tile["pos"][1] * self.tile_size - offset[1]),
             )
+
+    def save(self, path: str):
+        f = open(path, "w")
+        json.dump({"Tile Size": self.tile_size, "Tilemap": self.tilemap}, f)
+        f.close()
+
+    def load(self, path: str):
+        f = open(path, "r")
+        map_data = json.load(f)
+        f.close()
+
+        self.tile_size = map_data["Tile Size"]
+        self.tilemap = map_data["Tilemap"]
